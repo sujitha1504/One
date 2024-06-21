@@ -1,0 +1,128 @@
+pip install flask
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# In-memory storage for glucose readings
+glucose_readings = []
+
+@app.route('/submit', methods=['POST'])
+def submit_reading():
+    data = request.get_json()
+    reading = data.get('reading')
+    if reading is not None:
+        glucose_readings.append(reading)
+        return jsonify({"message": "Reading submitted successfully!"}), 200
+    else:
+        return jsonify({"error": "Invalid input"}), 400
+
+@app.route('/readings', methods=['GET'])
+def get_readings():
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGM Machine Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .reading {
+            font-size: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CGM Machine</h1>
+        <div class="reading">
+            Current Glucose Reading: <span id="glucoseReading">100 mg/dL</span>
+        </div>
+        <form id="glucoseForm">
+            <div class="form-group">
+                <label for="glucoseInput">Enter Glucose Reading (mg/dL):</label>
+                <input type="number" id="glucoseInput" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit Reading</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('glucoseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const reading = document.getElementById('glucoseInput').value;
+            
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ reading: reading })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('glucoseReading').innerText = reading + ' mg/dL';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+            document.getElementById('glucoseInput').value = '';
+        });
+    </script>
+</body>
+</html>return jsonify({"readings": glucose_readings}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True)
+python app.py
